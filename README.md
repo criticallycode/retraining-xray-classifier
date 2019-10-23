@@ -95,7 +95,7 @@ def create_model():
     # second parameter is the size of the "window" you want the CNN to use
     # the shape of the data we are passing in, 3 x 150 x 150
     # last element is just the image in the series, others are pixel widths
-    model.add(Conv2D(128, (3, 3), input_shape=(150, 150, 3)))
+    model.add(Conv2D(64, (3, 3), input_shape=(150, 150, 3)))
     model.add(Activation("relu"))
     model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(BatchNormalization())
@@ -105,9 +105,14 @@ def create_model():
     model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(BatchNormalization())
 
-    model.add(Conv2D(64, (3, 3)))
+    model.add(Conv2D(256, (3, 3)))
     model.add(Activation("relu"))
-    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(BatchNormalization())
+
+    model.add(Conv2D(256, (3, 3)))
+    model.add(Activation("relu"))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(BatchNormalization())
     # you'll need to flatten the data again if you plan on having Dense layers in the model,
     # as it needs a 1d unlike a 2d CNN
@@ -210,7 +215,7 @@ callbacks = [ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_o
               ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, verbose=1, mode='min', min_lr=0.00001),
               EarlyStopping(monitor= 'val_loss', min_delta=1e-10, patience=15, verbose=1, restore_best_weights=True)]
 
-records = model_2.fit_generator(train_generator_2, steps_per_epoch=90, epochs=5, validation_data=test_generator_2, validation_steps=7, verbose=1, callbacks=callbacks)
+records = model_2.fit_generator(train_generator_2, steps_per_epoch=90, epochs=20, validation_data=test_generator_2, validation_steps=7, verbose=1, callbacks=callbacks)
 
 t_loss = records.history['loss']
 v_loss = records.history['val_loss']
@@ -230,8 +235,7 @@ Here were the results after evaluating the second model:
 
 ![](C:\jupyter_notebooks\XRay Classification\Figure_4.png)
 
-​	acc: 70.74%
+​	acc: 73.48%
 
 
-
-We can see that after training it for only two epochs, and despite the perturbations applied to the dataset, performance is already around 70%.
+We can see that after being trained for only a few epochs, and despite the perturbations applied to the dataset, performance is already around 73%.
