@@ -15,9 +15,9 @@ if keras.backend.image_data_format() == 'channels_first':
 else:
     inp_shape = (im_width, im_height, 3)
 
-train_dir = "/chest_xray/train"
-val_dir = "/chest_xray/val"
-test_dir = "/chest_xray/test"
+train_dir = "C:/Users/Daniel/Downloads/chest-xray-pneumonia/chest_xray/chest_xray/train"
+val_dir = "C:/Users/Daniel/Downloads/chest-xray-pneumonia/chest_xray/chest_xray/val"
+test_dir = "C:/Users/Daniel/Downloads/chest-xray-pneumonia/chest_xray/chest_xray/test"
 
 # generate the data for both training and validation data
 # when we instantiate the data generator we pass in transformations to use
@@ -71,7 +71,7 @@ def create_model():
     # second parameter is the size of the "window" you want the CNN to use
     # the shape of the data we are passing in, 3 x 150 x 150
     # last element is just the image in the series, others are pixel widths
-    model.add(Conv2D(128, (3, 3), input_shape=(150, 150, 3)))
+    model.add(Conv2D(64, (3, 3), input_shape=(150, 150, 3)))
     model.add(Activation("relu"))
     model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(BatchNormalization())
@@ -81,9 +81,14 @@ def create_model():
     model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(BatchNormalization())
 
-    model.add(Conv2D(64, (3, 3)))
+    model.add(Conv2D(256, (3, 3)))
     model.add(Activation("relu"))
-    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(BatchNormalization())
+
+    model.add(Conv2D(256, (3, 3)))
+    model.add(Activation("relu"))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(BatchNormalization())
     # you'll need to flatten the data again if you plan on having Dense layers in the model,
     # as it needs a 1d unlike a 2d CNN
@@ -145,7 +150,7 @@ evaluation(model, train_length, t_acc, v_acc, t_loss, v_loss, 100, test_generato
 model_2 = create_model()
 model_2.load_weights("weights_training_1.hdf5")
 
-for layer in model_2.layers[:-3]:
+for layer in model_2.layers[:-5]:
     layer.trainable = False
 
 for layer in model_2.layers:
@@ -160,7 +165,7 @@ callbacks = [ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_o
               ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, verbose=1, mode='min', min_lr=0.00001),
               EarlyStopping(monitor= 'val_loss', min_delta=1e-10, patience=15, verbose=1, restore_best_weights=True)]
 
-records = model_2.fit_generator(train_generator_2, steps_per_epoch=85, epochs=2, validation_data=test_generator_2, validation_steps=7, verbose=1, callbacks=callbacks)
+records = model_2.fit_generator(train_generator_2, steps_per_epoch=85, epochs=20, validation_data=test_generator_2, validation_steps=7, verbose=1, callbacks=callbacks)
 
 t_loss = records.history['loss']
 v_loss = records.history['val_loss']
