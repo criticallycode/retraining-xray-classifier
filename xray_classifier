@@ -15,9 +15,9 @@ if keras.backend.image_data_format() == 'channels_first':
 else:
     inp_shape = (im_width, im_height, 3)
 
-train_dir = "C:/Users/Daniel/Downloads/chest-xray-pneumonia/chest_xray/chest_xray/train"
-val_dir = "C:/Users/Daniel/Downloads/chest-xray-pneumonia/chest_xray/chest_xray/val"
-test_dir = "C:/Users/Daniel/Downloads/chest-xray-pneumonia/chest_xray/chest_xray/test"
+train_dir = "chest_xray/train"
+val_dir = "chest_xray/val"
+test_dir = "chest_xray/test"
 
 # generate the data for both training and validation data
 # when we instantiate the data generator we pass in transformations to use
